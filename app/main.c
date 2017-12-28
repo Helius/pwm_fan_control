@@ -59,11 +59,12 @@ void pwm_init()
 void do_magic(uint8_t t)
 {
 		printf("[%d]%d\n\r", speed, t);
-		
-		if (t > 45) {
-			speed = 9;
-			adjust_fan();
+
+		int8_t k = t-40;
+		if (k > 0) {
+			speed = k*2;
 		}
+		adjust_fan();
 }
 
 int main(void)
