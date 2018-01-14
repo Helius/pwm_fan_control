@@ -19,7 +19,8 @@
 TSDS18x20 DS18x20;
 TSDS18x20 *pDS18x20 = &DS18x20;
 
-uint8_t speed = 0;
+uint8_t idle_count = 0;
+uint8_t speed = 5;
 
 void togglePin(void)
 {
@@ -42,6 +43,7 @@ void uart_rx_handler(uint8_t ch)
 	if (ch >= '0' && ch <= '9') {
 		speed = ch - 0x30;
 		adjust_fan();
+		idle_count = 0;
 	}
 }
 
@@ -60,11 +62,11 @@ void do_magic(uint8_t t)
 {
 		printf("[%d]%d\n\r", speed, t);
 
-		int8_t k = t-40;
-		if (k > 0) {
-			speed = k*2;
-		}
-		adjust_fan();
+		//int8_t k = t-42;
+		//if (k > 0) {
+		//	speed = k*2;
+		//}
+		//adjust_fan();
 }
 
 int main(void)
@@ -94,6 +96,12 @@ int main(void)
 	while(1)
 	{
 		unsigned int temprx16;
+
+		idle_count++;
+		if(idle_count > 60) {
+			speed = 5;
+			adjust_fan();
+		}
 
 		togglePin();
 		_delay_ms(1000);
